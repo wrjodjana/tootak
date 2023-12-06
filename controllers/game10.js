@@ -27,7 +27,7 @@ const addBookContent = async (req, res) => {
     let imageUrl = null,
       audioUrl = null;
 
-    // Handle image upload
+
     if (req.files && req.files.image) {
       const image = req.files.image;
       const imageUploadParams = {
@@ -40,7 +40,7 @@ const addBookContent = async (req, res) => {
       imageUrl = await getSignedUrl(s3, new GetObjectCommand({ Bucket: bucketName, Key: image.originalname }), { expiresIn: 3600 });
     }
 
-    // Handle audio upload
+
     if (req.files && req.files.audio) {
       const audio = req.files.audio;
       const audioUploadParams = {
@@ -53,14 +53,14 @@ const addBookContent = async (req, res) => {
       audioUrl = await getSignedUrl(s3, new GetObjectCommand({ Bucket: bucketName, Key: audio.originalname }), { expiresIn: 3600 });
     }
 
-    // Create a new book frame
+
     const newFrame = {
       text: req.body.text,
       image: imageUrl,
       audio: audioUrl,
     };
 
-    // Add the frame to the book
+
     const book = await Book.findOne({ title: req.body.title });
     if (book) {
       book.frames.push(newFrame);
@@ -81,11 +81,10 @@ const addBookContent = async (req, res) => {
 
 const getBook = async (req, res) => {
   try {
-    // Assuming the book's unique identifier (like an ID or title) is passed as a URL parameter
-    const bookId = req.params.bookId; // or req.params.title for title-based retrieval
+    const bookId = req.params.bookId; 
 
-    // Find the book in the database
-    const book = await Book.findById(bookId); // or Book.findOne({ title: bookId }) for title-based retrieval
+
+    const book = await Book.findById(bookId);
 
     if (book) {
       res.status(200).json(book);
