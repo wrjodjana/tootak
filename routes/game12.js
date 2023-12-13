@@ -6,11 +6,10 @@ const router = express.Router();
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 
-router.route("/addAsset").post(upload.fields([{ name: backgroundImage }, { name: wordImage }, { name: gif }]));
-router.route("/addAudio").post(upload.fields([{ name: initialPromptAudio }, { name: lastPromptAudio }]));
+router.route("/addAsset").post(upload.fields([{ name: "backgroundImage" }, { name: "wordImage" }, { name: "gif" }]), addAsset);
+router.route("/addAudio").post(upload.fields([{ name: "initialPromptAudio" }, { name: "lastPromptAudio" }]), addAudio);
 
-router.route("/getAssetAndAudio").get(getAsset);
-router.route("/getAssetAndAudio").get(getAudio);
+router.route("/getAsset").get(getAssetAndAudio);
 
 router.route("/getAssets").get(getAllAssets);
 router.route("/getAudios").get(getAllAudios);

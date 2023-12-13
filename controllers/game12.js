@@ -213,3 +213,45 @@ const getAssetAndAudio = async (req, res) => {
       res.status(400).send({ error: error.toString() });
     });
 };
+
+const getAllAssets = async (req, res) => {
+  try {
+    const assets = await game12Asset.find();
+    res.status(200).send(assets);
+  } catch (error) {
+    res.status(400).send({ error: error.toString() });
+  }
+};
+
+const getAllAudios = async (req, res) => {
+  try {
+    const audios = await game12Audio.find();
+    res.status(200).send(audios);
+  } catch (error) {
+    res.status(400).send({ error: error.toString() });
+  }
+};
+
+const deleteAsset = async (req, res) => {
+  try {
+    await game12Asset.deleteOne({ _id: req.params.id });
+    res.status(200).json({
+      message: "done",
+    });
+  } catch (error) {
+    res.send(error);
+  }
+};
+
+const deleteAudio = async (req, res) => {
+  try {
+    await game12Audio.deleteOne({ _id: req.params.id });
+    res.status(200).json({
+      message: "done",
+    });
+  } catch (error) {
+    res.send(error);
+  }
+};
+
+module.exports = { addAsset, addAudio, getAssetAndAudio, getAllAssets, getAllAudios, deleteAsset, deleteAudio };
