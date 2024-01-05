@@ -192,7 +192,7 @@ const getAssetAndAudio = async (req, res) => {
             }
           })
           .catch((err) => {
-            res.status(400).send({ "err 2": err.toString() });
+            res.status(400).send({ "error 2": err.toString() });
             flag = true;
           });
 
@@ -234,23 +234,41 @@ const getAllAudios = async (req, res) => {
 
 const deleteAsset = async (req, res) => {
   try {
+    var asset = await game12Asset.findById(req.params.id);
+
+    if (!asset) {
+      res.status(404).json({
+        message: "Record not found"
+    })
+    return;
+    }
+
     await game12Asset.deleteOne({ _id: req.params.id });
     res.status(200).json({
       message: "done",
     });
   } catch (error) {
-    res.send(error);
+    res.status(400).json({ message: 'Error. Something went wrong' });
   }
 };
 
 const deleteAudio = async (req, res) => {
   try {
+    var audio = await game12Audio.findById(req.params.id);
+
+    if (!audio) {
+      res.status(404).json({
+        message: "Record not found"
+    })
+    return;
+    }
+
     await game12Audio.deleteOne({ _id: req.params.id });
     res.status(200).json({
       message: "done",
     });
   } catch (error) {
-    res.send(error);
+    res.status(400).json({ message: 'Error. Something went wrong' });
   }
 };
 
@@ -297,7 +315,7 @@ const updateAsset = async (req, res) => {
     await s3.send(command)
 
     const document = {name: req.body.name, module: req.body.module, backgroundImage: req.body.backgroundImage, wordImage: req.body.wordImage, gif: req.body.gif};
-    await game12Asset.updateOne({
+      await game12Asset.updateOne({
       __id: req.params.id
     },
     document);
