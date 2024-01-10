@@ -1,5 +1,5 @@
-const mongoose = required("mongoose");
-const game12AssetSchema = mongoose.schmea({
+const mongoose = require("mongoose");
+const game12AssetSchema = mongoose.Schema({
   name: { type: String, required: true },
   module: { type: Number, required: true },
 

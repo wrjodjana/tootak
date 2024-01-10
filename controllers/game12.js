@@ -1,5 +1,5 @@
 const game12Asset = require("../model/game12Asset");
-const game12Audio = required("../model/game12Audio");
+const game12Audio = require("../model/game12Audio");
 const { S3Client, GetObjectCommand, PutObjectCommand, DeleteObjectCommand } = require("@aws-sdk/client-s3");
 const dotenv = require("dotenv");
 const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
@@ -238,9 +238,9 @@ const deleteAsset = async (req, res) => {
 
     if (!asset) {
       res.status(404).json({
-        message: "Record not found"
-    })
-    return;
+        message: "Record not found",
+      });
+      return;
     }
 
     await game12Asset.deleteOne({ _id: req.params.id });
@@ -248,7 +248,7 @@ const deleteAsset = async (req, res) => {
       message: "done",
     });
   } catch (error) {
-    res.status(400).json({ message: 'Error. Something went wrong' });
+    res.status(400).json({ message: "Error. Something went wrong" });
   }
 };
 
@@ -258,9 +258,9 @@ const deleteAudio = async (req, res) => {
 
     if (!audio) {
       res.status(404).json({
-        message: "Record not found"
-    })
-    return;
+        message: "Record not found",
+      });
+      return;
     }
 
     await game12Audio.deleteOne({ _id: req.params.id });
@@ -268,111 +268,115 @@ const deleteAudio = async (req, res) => {
       message: "done",
     });
   } catch (error) {
-    res.status(400).json({ message: 'Error. Something went wrong' });
+    res.status(400).json({ message: "Error. Something went wrong" });
   }
 };
 
 const updateAsset = async (req, res) => {
   try {
-    if (!(req.files['backgroundImage']) || !(req.files['wordImage']) || !(req.files['gif'])) {
+    if (!req.files["backgroundImage"] || !req.files["wordImage"] || !req.files["gif"]) {
       res.status(400).json({
-        message: "Please provide the correct files"
-      })
+        message: "Please provide the correct files",
+      });
       return;
     }
 
-    var backgroundImage = req.files['backgroundImage'][0];
+    var backgroundImage = req.files["backgroundImage"][0];
 
     var params = {
       Bucket: bucketName,
       Key: backgroundImage.originalname,
       Body: backgroundImage.buffer,
-      ContentType: backgroundImage.mimetype
-    }
+      ContentType: backgroundImage.mimetype,
+    };
     var command = new PutObjectCommand(params);
     await s3.send(command);
 
-    var wordImage = req.files['wordImage'][0];
+    var wordImage = req.files["wordImage"][0];
 
     params = {
       Bucket: bucketName,
       Key: wordImage.originalname,
       Body: wordImage.buffer,
-      ContentType: wordImage.mimetype
-    }
+      ContentType: wordImage.mimetype,
+    };
     command = new PutObjectCommand(params);
     await s3.send(command);
 
-    var gif = req.files['gif'][0];
+    var gif = req.files["gif"][0];
 
     params = {
       Bucket: bucketName,
       Key: gif.originalname,
       Body: gif.buffer,
-      ContentType: gif.mimetype
-    }
+      ContentType: gif.mimetype,
+    };
     command = new PutObjectCommand(params);
-    await s3.send(command)
+    await s3.send(command);
 
-    const document = {name: req.body.name, module: req.body.module, backgroundImage: req.body.backgroundImage, wordImage: req.body.wordImage, gif: req.body.gif};
-      await game12Asset.updateOne({
-      __id: req.params.id
-    },
-    document);
+    const document = { name: req.body.name, module: req.body.module, backgroundImage: req.body.backgroundImage, wordImage: req.body.wordImage, gif: req.body.gif };
+    await game12Asset.updateOne(
+      {
+        __id: req.params.id,
+      },
+      document
+    );
 
     res.status(200).json({
-      message: "completed"
-    })
+      message: "completed",
+    });
   } catch (error) {
-    res.status(400).send({message : 'Error. Something went wrong'})
+    res.status(400).send({ message: "Error. Something went wrong" });
   }
-}
+};
 
-const updateAudio = async(req, res) => {
+const updateAudio = async (req, res) => {
   try {
-    if (!(req.files['initialPromptAudio']) || !(req.files['lastPromptAudio'])) {
+    if (!req.files["initialPromptAudio"] || !req.files["lastPromptAudio"]) {
       res.status(400).json({
-        message: "Please upload the files correctly"
-      })
+        message: "Please upload the files correctly",
+      });
       return;
     }
-    
-    var initialPromptAudio = req.files['initialPromptAudio'][0]
+
+    var initialPromptAudio = req.files["initialPromptAudio"][0];
 
     var params = {
       Bucket: bucketName,
       Key: initialPromptAudio.originalname,
       Body: initialPromptAudio.buffer,
-      ContentType: initialPromptAudio.mimetype
-    }
+      ContentType: initialPromptAudio.mimetype,
+    };
     var command = new PutObjectCommand(params);
-    await s3.send(command)
+    await s3.send(command);
 
-    var lastPromptAudio = req.files['lastPromptAudio'][0]
+    var lastPromptAudio = req.files["lastPromptAudio"][0];
 
     params = {
       Bucket: bucketName,
       Key: lastPromptAudio.originalname,
       Body: lastPromptAudio.buffer,
-      ContentType: lastPromptAudio.mimetype
-    }
+      ContentType: lastPromptAudio.mimetype,
+    };
 
     command = new PutObjectCommand(params);
-    await s3.send(command)
+    await s3.send(command);
 
-    const document = {name: req.body.name, module: req.body.module, initialPromptAudio: req.body.initialPromptAudio, lastPromptAudio: req.body.lastPromptAudio};
+    const document = { name: req.body.name, module: req.body.module, initialPromptAudio: req.body.initialPromptAudio, lastPromptAudio: req.body.lastPromptAudio };
 
-    await game12Audio.updateOne({
-      __id: req.params.id
-    },
-        document);
+    await game12Audio.updateOne(
+      {
+        __id: req.params.id,
+      },
+      document
+    );
 
     res.status(200).json({
-      message: "completed"
-    })
+      message: "completed",
+    });
   } catch (error) {
-    res.status(400).json({message: "Error. Something went wrong"})
+    res.status(400).json({ message: "Error. Something went wrong" });
   }
-}
+};
 
 module.exports = { addAsset, addAudio, getAssetAndAudio, getAllAssets, getAllAudios, deleteAsset, deleteAudio, updateAsset, updateAudio };
