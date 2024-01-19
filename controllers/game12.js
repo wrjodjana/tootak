@@ -112,11 +112,11 @@ const addAudio = async (req, res) => {
     command = new PutObjectCommand(params);
     await s3.send(command);
 
-    await game12Audio.findOne({ name: req.body.name, module }).then(async (audio) => {
+    await game12Audio.findOne({ name: req.body.name, module: req.body.module }).then(async (audio) => {
       if (audio) {
         return res.status(200).send("Audio already present in the database");
       } else {
-        const document = new game12Asset({
+        const document = new game12Audio({
           name: req.body.name,
           module: req.body.module,
           initialPromptAudio: initialPromptAudio.originalname,
@@ -232,6 +232,10 @@ const getAllAudios = async (req, res) => {
   }
 };
 
+const getAssetbyId = async (req, res) => {
+  const id = req.params.id;
+};
+
 const deleteAsset = async (req, res) => {
   try {
     var asset = await game12Asset.findById(req.params.id);
@@ -314,17 +318,22 @@ const updateAsset = async (req, res) => {
     command = new PutObjectCommand(params);
     await s3.send(command);
 
-    const document = { name: req.body.name, module: req.body.module, backgroundImage: req.body.backgroundImage, wordImage: req.body.wordImage, gif: req.body.gif };
-    await game12Asset.updateOne(
-      {
-        __id: req.params.id,
-      },
-      document
-    );
-
-    res.status(200).json({
-      message: "completed",
-    });
+    const document = { name: req.body.name, module: req.body.module, backgroundImage: backgroundImage.originalname, wordImage: wordImage.originalname, gif: gif.originalname };
+    await game12Asset
+      .updateOne(
+        {
+          __id: req.params.id,
+        },
+        document
+      )
+      .then((result) => {
+        res.status(200).json({
+          message: "completed",
+        });
+      })
+      .catch((error) => {
+        console.log(error.toString());
+      });
   } catch (error) {
     res.status(400).send({ message: "Error. Something went wrong" });
   }
