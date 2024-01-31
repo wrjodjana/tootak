@@ -184,7 +184,7 @@ const addAsset = async (req, res) => {
       if (asset) {
         return res.status(200).send("Asset already present in database");
       } else {
-        const document = new game12Asset({
+        const document = new game16Asset({
           name: req.body.name,
           module: req.body.module,
 
@@ -224,7 +224,7 @@ const addAsset = async (req, res) => {
 const getAsset = async (req, res) => {
   var flag = false;
 
-  await game12Asset
+  await game16Asset
     .findOne({ name: req.body.name, module: req.body.module })
     .then(async (result) => {
       if (result) {
@@ -368,3 +368,188 @@ const getAllAssets = async (req, res) => {
     res.status(400).send({ error: error.toString() });
   }
 };
+
+const getAssetById = async (req, res) => {
+  try {
+    const id = req.params.id;
+    const asset = await game16Asset.findById(id);
+
+    var image1 = asset.image1;
+    var image2 = asset.image2;
+    var image3 = asset.image3;
+    var image4 = asset.image4;
+
+    var text1 = asset.text1;
+    var text2 = asset.text2;
+    var text3 = asset.text3;
+    var text4 = asset.text4;
+
+    var initialPromptAudio = asset.initialPromptAudio;
+    var finalPromptAudio = asset.finalPromptAudio;
+
+    var image1Audio = asset.image1Audio;
+    var image2Audio = asset.image2Audio;
+    var image3Audio = asset.image3Audio;
+    var image4Audio = asset.image4Audio;
+
+    var getObjectParams = {
+      Bucket: bucketName,
+      Key: image1,
+    };
+    var command = new GetObjectCommand(getObjectParams);
+    var image1Url = await getSignedUrl(s3, command, { expiresIn: 3600 });
+
+    getObjectParams = {
+      Bucket: bucketName,
+      Key: image2,
+    };
+    command = new GetObjectCommand(getObjectParams);
+    var image2Url = await getSignedUrl(s3, command, { expiresIn: 3600 });
+
+    getObjectParams = {
+      Bucket: bucketName,
+      Key: image3,
+    };
+    command = new GetObjectCommand(getObjectParams);
+    var image3Url = await getSignedUrl(s3, command, { expiresIn: 3600 });
+
+    getObjectParams = {
+      Bucket: bucketName,
+      Key: image4,
+    };
+    command = new GetObjectCommand(getObjectParams);
+    var image4Url = await getSignedUrl(s3, command, { expiresIn: 3600 });
+
+    getObjectParams = {
+      Bucket: bucketName,
+      Key: text1,
+    };
+    command = new GetObjectCommand(getObjectParams);
+    var text1Url = await getSignedUrl(s3, command, { expiresIn: 3600 });
+
+    getObjectParams = {
+      Bucket: bucketName,
+      Key: text2,
+    };
+    command = new GetObjectCommand(getObjectParams);
+    var text2Url = await getSignedUrl(s3, command, { expiresIn: 3600 });
+
+    getObjectParams = {
+      Bucket: bucketName,
+      Key: text3,
+    };
+    command = new GetObjectCommand(getObjectParams);
+    var text3Url = await getSignedUrl(s3, command, { expiresIn: 3600 });
+
+    getObjectParams = {
+      Bucket: bucketName,
+      Key: text4,
+    };
+    command = new GetObjectCommand(getObjectParams);
+    var text4Url = await getSignedUrl(s3, command, { expiresIn: 3600 });
+
+    getObjectParams = {
+      Bucket: bucketName,
+      Key: initialPromptAudio,
+    };
+    command = new GetObjectCommand(getObjectParams);
+    var initialPromptAudioUrl = await getSignedUrl(s3, command, { expiresIn: 3600 });
+
+    getObjectParams = {
+      Bucket: bucketName,
+      Key: finalPromptAudio,
+    };
+    command = new GetObjectCommand(getObjectParams);
+    var finalPromptAudioUrl = await getSignedUrl(s3, command, { expiresIn: 3600 });
+
+    getObjectParams = {
+      Bucket: bucketName,
+      Key: image1Audio,
+    };
+    command = new GetObjectCommand(getObjectParams);
+    var image1AudioUrl = await getSignedUrl(s3, command, { expiresIn: 3600 });
+
+    getObjectParams = {
+      Bucket: bucketName,
+      Key: image2Audio,
+    };
+    command = new GetObjectCommand(getObjectParams);
+    var image2AudioUrl = await getSignedUrl(s3, command, { expiresIn: 3600 });
+
+    getObjectParams = {
+      Bucket: bucketName,
+      Key: image3Audio,
+    };
+    command = new GetObjectCommand(getObjectParams);
+    var image3AudioUrl = await getSignedUrl(s3, command, { expiresIn: 3600 });
+
+    getObjectParams = {
+      Bucket: bucketName,
+      Key: image4Audio,
+    };
+    command = new GetObjectCommand(getObjectParams);
+    var image4AudioUrl = await getSignedUrl(s3, command, { expiresIn: 3600 });
+
+    res.status(200).send({asset : asset, image1 : image1Url, image2 : image2Url, image3 : image3Url, image4 : image4Url, text1 : text1Url, text2 : text2Url, text3 : text3Url, text4 : text4Url, initialPromptAudio: initialPromptAudioUrl, finalPromptAudio: finalPromptAudioUrl, image1Audio : image1AudioUrl, image2Audio : image2AudioUrl, image3Audio : image3AudioUrl, image4 : image4AudioUrl})
+
+  } catch (error) {
+      console.log(error);
+      res.status(400).json({ message: 'Error. Something went wrong' });
+  }
+}
+
+const deleteAsset = async (req, res) => {
+  try {
+    var asset = await game16Asset.findById(req.params.id);
+
+    if (!asset) {
+      res.status(404).json({
+        message: "Record not found",
+      });
+      return;
+    }
+
+    await game16Asset.deleteOne({ _id: req.params.id });
+    res.status(200).json({
+      message: "done",
+    });
+  } catch (error) {
+    res.status(400).json({ message: "Error. Something went wrong" });
+  }
+};
+
+const updateAsset = async (req, res) => {
+  try {
+    if (!req.files["image1"] || !req.files["image2"] || !req.files["image3"] || !req.files["image4"] || !req.files["text1"] || !req.files["text2"] || !req.files["text3"] || !req.files["text4"] || !req.files["initialPromptAudio"] || !req.files["finalPromptAudio"] || !req.files["image1Audio"] || !req.files["image2Audio"] || !req.files["image3Audio"] || !req.files["image4Audio"]) {
+      res.status(400).json({
+      message: "Please provide the correct files",
+    });
+    return;
+    }
+
+
+    const document = { name: req.body.name, module: req.body.module, image1: image1.originalname, image2: image2.originalname, image3: image3.originalname, image4: image4.originalname, text1: text1.originalname, text2: text2.originalname, text3: text3.originalname, text4: text4.originalname, initialPromptAudio: initialPromptAudio.originalname, finalPromptAudio: finalPromptAudio.originalname, image1Audio: image1Audio.originalname, image2Audio: image2Audio.originalname, image3: image3Audio.originalname, image4: image4.originalname}
+    await game16Asset
+      .updateOne(
+        {
+          __id: req.params.id,
+        },
+        document
+      )
+      .then((result) => {
+        res.status(200).json({
+          message: "completed",
+        });
+      })
+      .catch((error) => {
+        console.log(error.toString());
+      });
+
+    res.status(200).json({
+      message: "completed",
+    });
+    
+  } catch (error) {
+    res.status(400).json({ message: "Error. Something went wrong" });
+  }
+}
