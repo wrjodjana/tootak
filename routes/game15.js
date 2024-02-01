@@ -7,7 +7,7 @@ const {
   getAssetById,
   deleteById,
   updateAsset,
-} = require("../controllers/game16");
+} = require("../controllers/game15");
 const { authenticateToken, authorizeUser } = require("../auth/auth");
 const router = express.Router();
 const storage = multer.memoryStorage();
@@ -19,13 +19,9 @@ router
     upload.fields([
       { name: "initialAudioPrompt" },
       { name: "finalAudioPrompt" },
-      { name: "correctOption1Image" },
-      { name: "correctOption1Audio" },
-      { name: "correctOption2Image" },
-      { name: "correctOption2Audio" },
-      { name: "option1Image" },
+      { name: "image" },
+      { name: "correctOptionAudio" },
       { name: "option1Audio" },
-      { name: "option2Image" },
       { name: "option2Audio" },
     ]),
     authenticateToken,
@@ -53,18 +49,13 @@ router
     upload.fields([
       { name: "initialAudioPrompt" },
       { name: "finalAudioPrompt" },
-      { name: "correctOption1Image" },
-      { name: "correctOption1Audio" },
-      { name: "correctOption2Image" },
-      { name: "correctOption2Audio" },
-      { name: "option1Image" },
+      { name: "image" },
+      { name: "correctOptionAudio" },
       { name: "option1Audio" },
-      { name: "option2Image" },
       { name: "option2Audio" },
     ]),
     authenticateToken,
     authorizeUser,
     updateAsset
   );
-
 module.exports = router;

@@ -1,4 +1,4 @@
-const game16AssetAndAudio = require("../model/game16");
+const game15AssetAndAudio = require("../model/game15");
 const {
   S3Client,
   GetObjectCommand,
@@ -44,52 +44,22 @@ const addAsset = async (req, res) => {
     command = new PutObjectCommand(params);
     await s3.send(command);
 
-    var correctOption1Image = req.files["correctOption1Image"][0];
+    var image = req.files["image"][0];
     params = {
       Bucket: bucketName,
-      Key: correctOption1Image.originalname,
-      Body: correctOption1Image.buffer,
-      ContentType: correctOption1Image.mimetype,
+      Key: image.originalname,
+      Body: image.buffer,
+      ContentType: image.mimetype,
     };
     command = new PutObjectCommand(params);
     await s3.send(command);
 
-    var correctOption1Audio = req.files["correctOption1Audio"][0];
+    var correctOptionAudio = req.files["correctOptionAudio"][0];
     params = {
       Bucket: bucketName,
-      Key: correctOption1Audio.originalname,
-      Body: correctOption1Audio.buffer,
-      ContentType: correctOption1Audio.mimetype,
-    };
-    command = new PutObjectCommand(params);
-    await s3.send(command);
-
-    var correctOption2Image = req.files["correctOption2Image"][0];
-    params = {
-      Bucket: bucketName,
-      Key: correctOption2Image.originalname,
-      Body: correctOption2Image.buffer,
-      ContentType: correctOption2Image.mimetype,
-    };
-    command = new PutObjectCommand(params);
-    await s3.send(command);
-
-    var correctOption2Audio = req.files["correctOption2Audio"][0];
-    params = {
-      Bucket: bucketName,
-      Key: correctOption2Audio.originalname,
-      Body: correctOption2Audio.buffer,
-      ContentType: correctOption2Audio.mimetype,
-    };
-    command = new PutObjectCommand(params);
-    await s3.send(command);
-
-    var option1Image = req.files["option1Image"][0];
-    params = {
-      Bucket: bucketName,
-      Key: option1Image.originalname,
-      Body: option1Image.buffer,
-      ContentType: option1Image.mimetype,
+      Key: correctOptionAudio.originalname,
+      Body: correctOptionAudio.buffer,
+      ContentType: correctOptionAudio.mimetype,
     };
     command = new PutObjectCommand(params);
     await s3.send(command);
@@ -104,16 +74,6 @@ const addAsset = async (req, res) => {
     command = new PutObjectCommand(params);
     await s3.send(command);
 
-    var option2Image = req.files["option2Image"][0];
-    params = {
-      Bucket: bucketName,
-      Key: option2Image.originalname,
-      Body: option2Image.buffer,
-      ContentType: option2Image.mimetype,
-    };
-    command = new PutObjectCommand(params);
-    await s3.send(command);
-
     var option2Audio = req.files["option2Audio"][0];
     params = {
       Bucket: bucketName,
@@ -124,36 +84,29 @@ const addAsset = async (req, res) => {
     command = new PutObjectCommand(params);
     await s3.send(command);
 
-    await game16AssetAndAudio
+    await game15AssetAndAudio
       .findOne({ name: req.body.name, module: req.body.module })
       .then(async (asset) => {
         if (asset) {
           return res.status(200).send("Asset already present in database");
         } else {
-          const document = new game16AssetAndAudio({
+          const document = new game15AssetAndAudio({
             name: req.body.name,
             module: req.body.module,
 
             initialAudioPrompt: initialAudioPrompt.originalname,
             finalAudioPrompt: finalAudioPrompt.originalname,
+            image: image.originalname,
 
-            correctOption1: {
-              image: correctOption1Image.originalname,
-              audio: correctOption1Audio.originalname,
-              text: req.body.correctOption1Text,
-            },
-            correctOption2: {
-              image: correctOption2Image.originalname,
-              audio: correctOption2Audio.originalname,
-              text: req.body.correctOption2Text,
+            correctOption: {
+              audio: correctOptionAudio.originalname,
+              text: req.body.correctOptionText,
             },
             option1: {
-              image: option1Image.originalname,
               audio: option1Audio.originalname,
               text: req.body.option1Text,
             },
             option2: {
-              image: option2Image.originalname,
               audio: option2Audio.originalname,
               text: req.body.option2Text,
             },
@@ -175,12 +128,14 @@ const addAsset = async (req, res) => {
 
 const getAsset = async (req, res) => {
   try {
-    await game16AssetAndAudio
+    await game15AssetAndAudio
       .findOne({ name: req.body.name, module: req.body.module })
       .then(async (result) => {
         if (!result) {
           return res.status(200).send("No such scenario exists");
         } else {
+          var game15Audios = [];
+
           getObjectParams = {
             Bucket: bucketName,
             Key: result.initialAudioPrompt,
@@ -201,48 +156,22 @@ const getAsset = async (req, res) => {
 
           getObjectParams = {
             Bucket: bucketName,
-            Key: result.correctOption1.image,
+            Key: result.image,
           };
           command = new GetObjectCommand(getObjectParams);
-          var correctOption1ImageUrl = await getSignedUrl(s3, command, {
-            expiresIn: 3600,
-          });
+          var imageUrl = await getSignedUrl(s3, command, { expiresIn: 3600 });
 
           getObjectParams = {
             Bucket: bucketName,
-            Key: result.correctOption1.audio,
+            Key: result.correctOption.audio,
           };
           command = new GetObjectCommand(getObjectParams);
-          var correctOption1AudioUrl = await getSignedUrl(s3, command, {
+          var correctOptionAudioUrl = await getSignedUrl(s3, command, {
             expiresIn: 3600,
           });
-
-          getObjectParams = {
-            Bucket: bucketName,
-            Key: result.correctOption2.image,
-          };
-          command = new GetObjectCommand(getObjectParams);
-          var correctOption2ImageUrl = await getSignedUrl(s3, command, {
-            expiresIn: 3600,
-          });
-
-          getObjectParams = {
-            Bucket: bucketName,
-            Key: result.correctOption2.audio,
-          };
-          command = new GetObjectCommand(getObjectParams);
-          var correctOption2AudioUrl = await getSignedUrl(s3, command, {
-            expiresIn: 3600,
-          });
-
-          getObjectParams = {
-            Bucket: bucketName,
-            Key: result.option1.image,
-          };
-          command = new GetObjectCommand(getObjectParams);
-          var option1ImageUrl = await getSignedUrl(s3, command, {
-            expiresIn: 3600,
-          });
+          game15Audios.push(
+            await getSignedUrl(s3, command, { expiresIn: 3600 })
+          );
 
           getObjectParams = {
             Bucket: bucketName,
@@ -252,15 +181,9 @@ const getAsset = async (req, res) => {
           var option1AudioUrl = await getSignedUrl(s3, command, {
             expiresIn: 3600,
           });
-
-          getObjectParams = {
-            Bucket: bucketName,
-            Key: result.option2.image,
-          };
-          command = new GetObjectCommand(getObjectParams);
-          var option2ImageUrl = await getSignedUrl(s3, command, {
-            expiresIn: 3600,
-          });
+          game15Audios.push(
+            await getSignedUrl(s3, command, { expiresIn: 3600 })
+          );
 
           getObjectParams = {
             Bucket: bucketName,
@@ -270,41 +193,31 @@ const getAsset = async (req, res) => {
           var option2AudioUrl = await getSignedUrl(s3, command, {
             expiresIn: 3600,
           });
+          game15Audios.push(
+            await getSignedUrl(s3, command, { expiresIn: 3600 })
+          );
 
-          var game16Array = [
-            [
-              correctOption1ImageUrl,
-              correctOption1AudioUrl,
-              result.correctOption1.text,
-              true,
-            ], // Correct option, hence 'True'
-            [
-              correctOption2ImageUrl,
-              correctOption2AudioUrl,
-              result.correctOption2.text,
-              true,
-            ], // Correct option, hence 'True'
-            [option1ImageUrl, option1AudioUrl, result.option1.text, false], // Incorrect option, hence 'False'
-            [option2ImageUrl, option2AudioUrl, result.option2.text, false], // Incorrect option, hence 'False'
+          var game15Array = [
+            [correctOptionAudioUrl, result.correctOption.text, true], // Correct option, hence 'True'
+            [option1AudioUrl, result.option1.text, false], // Incorrect option, hence 'False'
+            [option2AudioUrl, result.option2.text, false], // Incorrect option, hence 'False'
           ];
-
-          var shuffled = fisherYatesShuffle(game16Array);
+          var shuffled = fisherYatesShuffle(game15Array);
 
           return res.status(200).send({
             initialAudioPromptUrl,
             finalAudioPromptUrl,
-            game16: shuffled,
+            imageUrl,
+            game15: shuffled,
           });
         }
       });
-  } catch (error) {
-    res.status(400).json({ message: "Error. Something went wrong" });
-  }
+  } catch (error) {}
 };
 
 const getAllAssets = async (req, res) => {
   try {
-    const assets = await game16AssetAndAudio.find();
+    const assets = await game15AssetAndAudio.find();
     res.status(200).send(assets);
   } catch (error) {
     console.log(error.toString());
@@ -315,7 +228,7 @@ const getAllAssets = async (req, res) => {
 const getAssetById = async (req, res) => {
   try {
     const id = req.params.id;
-    const result = await game16AssetAndAudio.findById(id);
+    const result = await game15AssetAndAudio.findById(id);
 
     getObjectParams = {
       Bucket: bucketName,
@@ -330,7 +243,6 @@ const getAssetById = async (req, res) => {
       Bucket: bucketName,
       Key: result.finalAudioPrompt,
     };
-
     command = new GetObjectCommand(getObjectParams);
     var finalAudioPromptUrl = await getSignedUrl(s3, command, {
       expiresIn: 3600,
@@ -338,46 +250,19 @@ const getAssetById = async (req, res) => {
 
     getObjectParams = {
       Bucket: bucketName,
-      Key: result.correctOption1.image,
+      Key: result.image,
     };
     command = new GetObjectCommand(getObjectParams);
-    var correctOption1ImageUrl = await getSignedUrl(s3, command, {
-      expiresIn: 3600,
-    });
+    var imageUrl = await getSignedUrl(s3, command, { expiresIn: 3600 });
 
     getObjectParams = {
       Bucket: bucketName,
-      Key: result.correctOption1.audio,
+      Key: result.correctOption.audio,
     };
     command = new GetObjectCommand(getObjectParams);
-    var correctOption1AudioUrl = await getSignedUrl(s3, command, {
+    var correctOptionAudioUrl = await getSignedUrl(s3, command, {
       expiresIn: 3600,
     });
-
-    getObjectParams = {
-      Bucket: bucketName,
-      Key: result.correctOption2.image,
-    };
-    command = new GetObjectCommand(getObjectParams);
-    var correctOption2ImageUrl = await getSignedUrl(s3, command, {
-      expiresIn: 3600,
-    });
-
-    getObjectParams = {
-      Bucket: bucketName,
-      Key: result.correctOption2.audio,
-    };
-    command = new GetObjectCommand(getObjectParams);
-    var correctOption2AudioUrl = await getSignedUrl(s3, command, {
-      expiresIn: 3600,
-    });
-
-    getObjectParams = {
-      Bucket: bucketName,
-      Key: result.option1.image,
-    };
-    command = new GetObjectCommand(getObjectParams);
-    var option1ImageUrl = await getSignedUrl(s3, command, { expiresIn: 3600 });
 
     getObjectParams = {
       Bucket: bucketName,
@@ -388,29 +273,17 @@ const getAssetById = async (req, res) => {
 
     getObjectParams = {
       Bucket: bucketName,
-      Key: result.option2.image,
-    };
-    command = new GetObjectCommand(getObjectParams);
-    var option2ImageUrl = await getSignedUrl(s3, command, { expiresIn: 3600 });
-
-    getObjectParams = {
-      Bucket: bucketName,
       Key: result.option2.audio,
     };
     command = new GetObjectCommand(getObjectParams);
     var option2AudioUrl = await getSignedUrl(s3, command, { expiresIn: 3600 });
-
     return res.status(200).send({
       result,
-      initialAudioPromptUrl,
+      intialAudioPromptUrl,
       finalAudioPromptUrl,
-      correctOption1ImageUrl,
-      correctOption1AudioUrl,
-      correctOption2ImageUrl,
-      correctOption2AudioUrl,
-      option1ImageUrl,
+      imageUrl,
+      correctOptionAudioUrl,
       option1AudioUrl,
-      option2ImageUrl,
       option2AudioUrl,
     });
   } catch (error) {
@@ -420,7 +293,7 @@ const getAssetById = async (req, res) => {
 
 const deleteById = async (req, res) => {
   try {
-    var asset = await game16AssetAndAudio.findById(req.params.id);
+    var asset = await game15AssetAndAudio.findById(req.params.id);
 
     if (!asset) {
       res.status(404).json({
@@ -429,7 +302,7 @@ const deleteById = async (req, res) => {
       return;
     }
 
-    await game16AssetAndAudio.deleteOne({ _id: req.params.id });
+    await game15AssetAndAudio.deleteOne({ _id: req.params.id });
     res.status(200).json({
       message: "done",
     });
@@ -460,52 +333,22 @@ const updateAsset = async (req, res) => {
     command = new PutObjectCommand(params);
     await s3.send(command);
 
-    var correctOption1Image = req.files["correctOption1Image"][0];
+    var image = req.files["image"][0];
     params = {
       Bucket: bucketName,
-      Key: correctOption1Image.originalname,
-      Body: correctOption1Image.buffer,
-      ContentType: correctOption1Image.mimetype,
+      Key: image.originalname,
+      Body: image.buffer,
+      ContentType: image.mimetype,
     };
     command = new PutObjectCommand(params);
     await s3.send(command);
 
-    var correctOption1Audio = req.files["correctOption1Audio"][0];
+    var correctOptionAudio = req.files["correctOptionAudio"][0];
     params = {
       Bucket: bucketName,
-      Key: correctOption1Audio.originalname,
-      Body: correctOption1Audio.buffer,
-      ContentType: correctOption1Audio.mimetype,
-    };
-    command = new PutObjectCommand(params);
-    await s3.send(command);
-
-    var correctOption2Image = req.files["correctOption2Image"][0];
-    params = {
-      Bucket: bucketName,
-      Key: correctOption2Image.originalname,
-      Body: correctOption2Image.buffer,
-      ContentType: correctOption2Image.mimetype,
-    };
-    command = new PutObjectCommand(params);
-    await s3.send(command);
-
-    var correctOption2Audio = req.files["correctOption2Audio"][0];
-    params = {
-      Bucket: bucketName,
-      Key: correctOption2Audio.originalname,
-      Body: correctOption2Audio.buffer,
-      ContentType: correctOption2Audio.mimetype,
-    };
-    command = new PutObjectCommand(params);
-    await s3.send(command);
-
-    var option1Image = req.files["option1Image"][0];
-    params = {
-      Bucket: bucketName,
-      Key: option1Image.originalname,
-      Body: option1Image.buffer,
-      ContentType: option1Image.mimetype,
+      Key: correctOptionAudio.originalname,
+      Body: correctOptionAudio.buffer,
+      ContentType: correctOptionAudio.mimetype,
     };
     command = new PutObjectCommand(params);
     await s3.send(command);
@@ -516,16 +359,6 @@ const updateAsset = async (req, res) => {
       Key: option1Audio.originalname,
       Body: option1Audio.buffer,
       ContentType: option1Audio.mimetype,
-    };
-    command = new PutObjectCommand(params);
-    await s3.send(command);
-
-    var option2Image = req.files["option2Image"][0];
-    params = {
-      Bucket: bucketName,
-      Key: option2Image.originalname,
-      Body: option2Image.buffer,
-      ContentType: option2Image.mimetype,
     };
     command = new PutObjectCommand(params);
     await s3.send(command);
@@ -546,29 +379,22 @@ const updateAsset = async (req, res) => {
 
       initialAudioPrompt: initialAudioPrompt.originalname,
       finalAudioPrompt: finalAudioPrompt.originalname,
+      image: image.originalname,
 
-      correctOption1: {
-        image: correctOption1Image.originalname,
-        audio: correctOption1Audio.originalname,
-        text: req.body.correctOption1Text,
-      },
-      correctOption2: {
-        image: correctOption2Image.originalname,
-        audio: correctOption2Audio.originalname,
-        text: req.body.correctOption2Text,
+      correctOption: {
+        audio: correctOptionAudio.originalname,
+        text: req.body.correctOptionText,
       },
       option1: {
-        image: option1Image.originalname,
         audio: option1Audio.originalname,
         text: req.body.option1Text,
       },
       option2: {
-        image: option2Image.originalname,
         audio: option2Audio.originalname,
         text: req.body.option2Text,
       },
     };
-    await game16AssetAndAudio.updateOne(
+    await game15AssetAndAudio.updateOne(
       {
         _id: req.params.id,
       },
