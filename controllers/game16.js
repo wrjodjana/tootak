@@ -1,10 +1,5 @@
 const game16AssetAndAudio = require("../model/game16");
-const {
-  S3Client,
-  GetObjectCommand,
-  PutObjectCommand,
-  DeleteObjectCommand,
-} = require("@aws-sdk/client-s3");
+const { S3Client, GetObjectCommand, PutObjectCommand, DeleteObjectCommand } = require("@aws-sdk/client-s3");
 const dotenv = require("dotenv");
 const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
 
@@ -124,50 +119,48 @@ const addAsset = async (req, res) => {
     command = new PutObjectCommand(params);
     await s3.send(command);
 
-    await game16AssetAndAudio
-      .findOne({ name: req.body.name, module: req.body.module })
-      .then(async (asset) => {
-        if (asset) {
-          return res.status(200).send("Asset already present in database");
-        } else {
-          const document = new game16AssetAndAudio({
-            name: req.body.name,
-            module: req.body.module,
+    await game16AssetAndAudio.findOne({ name: req.body.name, module: req.body.module }).then(async (asset) => {
+      if (asset) {
+        return res.status(200).send("Asset already present in database");
+      } else {
+        const document = new game16AssetAndAudio({
+          name: req.body.name,
+          module: req.body.module,
 
-            initialAudioPrompt: initialAudioPrompt.originalname,
-            finalAudioPrompt: finalAudioPrompt.originalname,
+          initialAudioPrompt: initialAudioPrompt.originalname,
+          finalAudioPrompt: finalAudioPrompt.originalname,
 
-            correctOption1: {
-              image: correctOption1Image.originalname,
-              audio: correctOption1Audio.originalname,
-              text: req.body.correctOption1Text,
-            },
-            correctOption2: {
-              image: correctOption2Image.originalname,
-              audio: correctOption2Audio.originalname,
-              text: req.body.correctOption2Text,
-            },
-            option1: {
-              image: option1Image.originalname,
-              audio: option1Audio.originalname,
-              text: req.body.option1Text,
-            },
-            option2: {
-              image: option2Image.originalname,
-              audio: option2Audio.originalname,
-              text: req.body.option2Text,
-            },
+          correctOption1: {
+            image: correctOption1Image.originalname,
+            audio: correctOption1Audio.originalname,
+            text: req.body.correctOption1Text,
+          },
+          correctOption2: {
+            image: correctOption2Image.originalname,
+            audio: correctOption2Audio.originalname,
+            text: req.body.correctOption2Text,
+          },
+          option1: {
+            image: option1Image.originalname,
+            audio: option1Audio.originalname,
+            text: req.body.option1Text,
+          },
+          option2: {
+            image: option2Image.originalname,
+            audio: option2Audio.originalname,
+            text: req.body.option2Text,
+          },
+        });
+        document
+          .save()
+          .then((result) => {
+            res.status(200).send(result);
+          })
+          .catch((error) => {
+            res.status(400).send({ error: error.toString() });
           });
-          document
-            .save()
-            .then((result) => {
-              res.status(200).send(result);
-            })
-            .catch((error) => {
-              res.status(400).send({ error: error.toString() });
-            });
-        }
-      });
+      }
+    });
   } catch (error) {
     res.status(400).send({ error: error.toString() });
   }
@@ -175,128 +168,116 @@ const addAsset = async (req, res) => {
 
 const getAsset = async (req, res) => {
   try {
-    await game16AssetAndAudio
-      .findOne({ name: req.body.name, module: req.body.module })
-      .then(async (result) => {
-        if (!result) {
-          return res.status(200).send("No such scenario exists");
-        } else {
-          getObjectParams = {
-            Bucket: bucketName,
-            Key: result.initialAudioPrompt,
-          };
-          command = new GetObjectCommand(getObjectParams);
-          var initialAudioPromptUrl = await getSignedUrl(s3, command, {
-            expiresIn: 3600,
-          });
+    await game16AssetAndAudio.findOne({ name: req.body.name, module: req.body.module }).then(async (result) => {
+      if (!result) {
+        return res.status(200).send("No such scenario exists");
+      } else {
+        getObjectParams = {
+          Bucket: bucketName,
+          Key: result.initialAudioPrompt,
+        };
+        command = new GetObjectCommand(getObjectParams);
+        var initialAudioPromptUrl = await getSignedUrl(s3, command, {
+          expiresIn: 3600,
+        });
 
-          getObjectParams = {
-            Bucket: bucketName,
-            Key: result.finalAudioPrompt,
-          };
-          command = new GetObjectCommand(getObjectParams);
-          var finalAudioPromptUrl = await getSignedUrl(s3, command, {
-            expiresIn: 3600,
-          });
+        getObjectParams = {
+          Bucket: bucketName,
+          Key: result.finalAudioPrompt,
+        };
+        command = new GetObjectCommand(getObjectParams);
+        var finalAudioPromptUrl = await getSignedUrl(s3, command, {
+          expiresIn: 3600,
+        });
 
-          getObjectParams = {
-            Bucket: bucketName,
-            Key: result.correctOption1.image,
-          };
-          command = new GetObjectCommand(getObjectParams);
-          var correctOption1ImageUrl = await getSignedUrl(s3, command, {
-            expiresIn: 3600,
-          });
+        getObjectParams = {
+          Bucket: bucketName,
+          Key: result.correctOption1.image,
+        };
+        command = new GetObjectCommand(getObjectParams);
+        var correctOption1ImageUrl = await getSignedUrl(s3, command, {
+          expiresIn: 3600,
+        });
 
-          getObjectParams = {
-            Bucket: bucketName,
-            Key: result.correctOption1.audio,
-          };
-          command = new GetObjectCommand(getObjectParams);
-          var correctOption1AudioUrl = await getSignedUrl(s3, command, {
-            expiresIn: 3600,
-          });
+        getObjectParams = {
+          Bucket: bucketName,
+          Key: result.correctOption1.audio,
+        };
+        command = new GetObjectCommand(getObjectParams);
+        var correctOption1AudioUrl = await getSignedUrl(s3, command, {
+          expiresIn: 3600,
+        });
 
-          getObjectParams = {
-            Bucket: bucketName,
-            Key: result.correctOption2.image,
-          };
-          command = new GetObjectCommand(getObjectParams);
-          var correctOption2ImageUrl = await getSignedUrl(s3, command, {
-            expiresIn: 3600,
-          });
+        getObjectParams = {
+          Bucket: bucketName,
+          Key: result.correctOption2.image,
+        };
+        command = new GetObjectCommand(getObjectParams);
+        var correctOption2ImageUrl = await getSignedUrl(s3, command, {
+          expiresIn: 3600,
+        });
 
-          getObjectParams = {
-            Bucket: bucketName,
-            Key: result.correctOption2.audio,
-          };
-          command = new GetObjectCommand(getObjectParams);
-          var correctOption2AudioUrl = await getSignedUrl(s3, command, {
-            expiresIn: 3600,
-          });
+        getObjectParams = {
+          Bucket: bucketName,
+          Key: result.correctOption2.audio,
+        };
+        command = new GetObjectCommand(getObjectParams);
+        var correctOption2AudioUrl = await getSignedUrl(s3, command, {
+          expiresIn: 3600,
+        });
 
-          getObjectParams = {
-            Bucket: bucketName,
-            Key: result.option1.image,
-          };
-          command = new GetObjectCommand(getObjectParams);
-          var option1ImageUrl = await getSignedUrl(s3, command, {
-            expiresIn: 3600,
-          });
+        getObjectParams = {
+          Bucket: bucketName,
+          Key: result.option1.image,
+        };
+        command = new GetObjectCommand(getObjectParams);
+        var option1ImageUrl = await getSignedUrl(s3, command, {
+          expiresIn: 3600,
+        });
 
-          getObjectParams = {
-            Bucket: bucketName,
-            Key: result.option1.audio,
-          };
-          command = new GetObjectCommand(getObjectParams);
-          var option1AudioUrl = await getSignedUrl(s3, command, {
-            expiresIn: 3600,
-          });
+        getObjectParams = {
+          Bucket: bucketName,
+          Key: result.option1.audio,
+        };
+        command = new GetObjectCommand(getObjectParams);
+        var option1AudioUrl = await getSignedUrl(s3, command, {
+          expiresIn: 3600,
+        });
 
-          getObjectParams = {
-            Bucket: bucketName,
-            Key: result.option2.image,
-          };
-          command = new GetObjectCommand(getObjectParams);
-          var option2ImageUrl = await getSignedUrl(s3, command, {
-            expiresIn: 3600,
-          });
+        getObjectParams = {
+          Bucket: bucketName,
+          Key: result.option2.image,
+        };
+        command = new GetObjectCommand(getObjectParams);
+        var option2ImageUrl = await getSignedUrl(s3, command, {
+          expiresIn: 3600,
+        });
 
-          getObjectParams = {
-            Bucket: bucketName,
-            Key: result.option2.audio,
-          };
-          command = new GetObjectCommand(getObjectParams);
-          var option2AudioUrl = await getSignedUrl(s3, command, {
-            expiresIn: 3600,
-          });
+        getObjectParams = {
+          Bucket: bucketName,
+          Key: result.option2.audio,
+        };
+        command = new GetObjectCommand(getObjectParams);
+        var option2AudioUrl = await getSignedUrl(s3, command, {
+          expiresIn: 3600,
+        });
 
-          var game16Array = [
-            [
-              correctOption1ImageUrl,
-              correctOption1AudioUrl,
-              result.correctOption1.text,
-              true,
-            ], // Correct option, hence 'True'
-            [
-              correctOption2ImageUrl,
-              correctOption2AudioUrl,
-              result.correctOption2.text,
-              true,
-            ], // Correct option, hence 'True'
-            [option1ImageUrl, option1AudioUrl, result.option1.text, false], // Incorrect option, hence 'False'
-            [option2ImageUrl, option2AudioUrl, result.option2.text, false], // Incorrect option, hence 'False'
-          ];
+        var game16Array = [
+          [correctOption1ImageUrl, correctOption1AudioUrl, result.correctOption1.text, true], // Correct option, hence 'True'
+          [correctOption2ImageUrl, correctOption2AudioUrl, result.correctOption2.text, true], // Correct option, hence 'True'
+          [option1ImageUrl, option1AudioUrl, result.option1.text, false], // Incorrect option, hence 'False'
+          [option2ImageUrl, option2AudioUrl, result.option2.text, false], // Incorrect option, hence 'False'
+        ];
 
-          var shuffled = fisherYatesShuffle(game16Array);
+        var shuffled = fisherYatesShuffle(game16Array);
 
-          return res.status(200).send({
-            initialAudioPromptUrl,
-            finalAudioPromptUrl,
-            game16: shuffled,
-          });
-        }
-      });
+        return res.status(200).send({
+          initialAudioPromptUrl,
+          finalAudioPromptUrl,
+          game16: shuffled,
+        });
+      }
+    });
   } catch (error) {
     res.status(400).json({ message: "Error. Something went wrong" });
   }
@@ -594,10 +575,7 @@ function fisherYatesShuffle(array1) {
     currentIndex--;
 
     // And swap it with the current element.
-    [array1[currentIndex], array1[randomIndex]] = [
-      array1[randomIndex],
-      array1[currentIndex],
-    ];
+    [array1[currentIndex], array1[randomIndex]] = [array1[randomIndex], array1[currentIndex]];
   }
   return array1;
 }
