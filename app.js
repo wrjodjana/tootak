@@ -10,6 +10,8 @@ const game5 = require("./routes/game5");
 const game7 = require("./routes/game7");
 const game8 = require("./routes/game8");
 const game12 = require("./routes/game12");
+const game15 = require("./routes/game15");
+const game16 = require("./routes/game16");
 const thumbnail = require("./routes/thumbnails");
 const video = require("./routes/video");
 const dotenv = require("dotenv");
@@ -44,6 +46,10 @@ app.use("/game7", game7);
 app.use("/game8", game8);
 
 app.use("/game12", game12);
+
+app.use("/game15", game15);
+
+app.use("/game16", game16);
 
 app.use("/thumbnail", thumbnail);
 app.use("/video", video);
