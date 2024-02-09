@@ -30,13 +30,13 @@ const addGame1 = async (req, res) => {
     await s3.send(command);
 
     var finalAudioPrompt = req.files["finalAudioPrompt"][0];
-    var params = {
+    params = {
       Bucket: bucketName,
       Key: finalAudioPrompt.originalname,
       Body: finalAudioPrompt.buffer,
       ContentType: finalAudioPrompt.mimetype,
     };
-    var command = new PutObjectCommand(params);
+    command = new PutObjectCommand(params);
     await s3.send(command);
 
     var correctOption1Image = req.files["correctOption1Image"][0];
@@ -157,6 +157,8 @@ const addGame1 = async (req, res) => {
           .catch((err) => {
             return res.status(400).send({ error: err.message });
           });
+      } else {
+        return res.status(200).send("Scenario already exists in database");
       }
     });
   } catch (error) {
@@ -282,6 +284,8 @@ const addGame2 = async (req, res) => {
           .catch((err) => {
             return res.status(400).send({ error: err.message });
           });
+      } else {
+        return res.status(200).send("Scenario already exists in database");
       }
     });
   } catch (error) {
@@ -910,13 +914,13 @@ const updateGame1 = async (req, res) => {
     await s3.send(command);
 
     var finalAudioPrompt = req.files["finalAudioPrompt"][0];
-    var params = {
+    params = {
       Bucket: bucketName,
       Key: finalAudioPrompt.originalname,
       Body: finalAudioPrompt.buffer,
       ContentType: finalAudioPrompt.mimetype,
     };
-    var command = new PutObjectCommand(params);
+    command = new PutObjectCommand(params);
     await s3.send(command);
 
     var correctOption1Image = req.files["correctOption1Image"][0];
