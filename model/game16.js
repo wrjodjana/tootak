@@ -6,69 +6,69 @@ const game16Schema = mongoose.Schema({
   initialAudioPrompt: String,
   finalAudioPrompt: String,
 
-  game1: {
-    correctOption1: {
+  level1: {
+    level1CorrectOption1: {
       image: String,
       audio: String,
       text: String,
     },
-    correctOption2: {
+    level1CorrectOption2: {
       image: String,
       audio: String,
       text: String,
     },
-    option1: {
+    level1Option1: {
       image: String,
       audio: String,
       text: String,
     },
-    option2: {
-      image: String,
-      audio: String,
-      text: String,
-    },
-  },
-
-  game2: {
-    correctOption1: {
-      image: String,
-      audio: String,
-      text: String,
-    },
-    correctOption2: {
-      image: String,
-      audio: String,
-      text: String,
-    },
-    option1: {
-      image: String,
-      audio: String,
-      text: String,
-    },
-    option2: {
+    level1option2: {
       image: String,
       audio: String,
       text: String,
     },
   },
 
-  game3: {
-    correctOption1: {
+  level2: {
+    level2CorrectOption1: {
       image: String,
       audio: String,
       text: String,
     },
-    correctOption2: {
+    level2CorrectOption2: {
       image: String,
       audio: String,
       text: String,
     },
-    option1: {
+    level2Option1: {
       image: String,
       audio: String,
       text: String,
     },
-    option2: {
+    level2Option2: {
+      image: String,
+      audio: String,
+      text: String,
+    },
+  },
+
+  level3: {
+    level3CorrectOption1: {
+      image: String,
+      audio: String,
+      text: String,
+    },
+    level3CorrectOption2: {
+      image: String,
+      audio: String,
+      text: String,
+    },
+    level3Option1: {
+      image: String,
+      audio: String,
+      text: String,
+    },
+    level3Option2: {
       image: String,
       audio: String,
       text: String,

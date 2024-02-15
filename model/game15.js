@@ -3,8 +3,8 @@ const game15Schema = mongoose.Schema({
   name: { type: String, required: true },
   module: { type: Number, required: true },
 
-  initialAudioPrompt: { type: String, required: true },
-  finalAudioPrompt: { type: String, required: true},
+  initialAudioPrompt: String,
+  finalAudioPrompt: String,
 
   level1: {
     level1Image: String,

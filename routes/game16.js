@@ -1,63 +1,45 @@
 const express = require("express");
 const multer = require("multer");
-const { addGame1, addGame2, addGame3, getAsset, getAllAssets, getAssetById, deleteById, updateGame1, updateGame2, updateGame3 } = require("../controllers/game16");
+const {
+  addAsset,
+  getAsset,
+  getAllAssets,
+  getAssetById,
+  deleteById,
+  updateAsset,
+} = require("../controllers/game16");
 const router = express.Router();
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 
 router
-  .route("/addGame1")
+  .route("/addAsset")
   .post(
     upload.fields([
       { name: "initialAudioPrompt" },
       { name: "finalAudioPrompt" },
-      { name: "correctOption1Image" },
-      { name: "correctOption1Audio" },
-      { name: "correctOption2Image" },
-      { name: "correctOption2Audio" },
-      { name: "option1Image" },
-      { name: "option1Audio" },
-      { name: "option2Image" },
-      { name: "option2Audio" },
+      { name: "level1Image" },
+      { name: "level1CorrectOption1Audio"},
+      { name: "level1CorrectOption2Audio"},
+      { name: "level1Option1Audio" },
+      { name: "level1Option2Audio" },
+      { name: "level2Image" },
+      { name: "level2CorrectOption1Audio" },
+      { name: "level1CorrectOption2Audio"},
+      { name: "level2Option1Audio" },
+      { name: "level2Option2Audio" },
+      { name: "level3Image" },
+      { name: "level3CorrectOption1Audio" },
+      { name: "level1CorrectOption2Audio"},
+      { name: "level3Option1Audio" },
+      { name: "level3Option2Audio" },
     ]),
-    addGame1
-  );
-
-router
-  .route("/addGame2")
-  .post(
-    upload.fields([
-      { name: "correctOption1Image" },
-      { name: "correctOption1Audio" },
-      { name: "correctOption2Image" },
-      { name: "correctOption2Audio" },
-      { name: "option1Image" },
-      { name: "option1Audio" },
-      { name: "option2Image" },
-      { name: "option2Audio" },
-    ]),
-    addGame2
-  );
-
-router
-  .route("/addGame3")
-  .post(
-    upload.fields([
-      { name: "correctOption1Image" },
-      { name: "correctOption1Audio" },
-      { name: "correctOption2Image" },
-      { name: "correctOption2Audio" },
-      { name: "option1Image" },
-      { name: "option1Audio" },
-      { name: "option2Image" },
-      { name: "option2Audio" },
-    ]),
-    addGame3
+    addAsset
   );
 
 router.route("/getAsset").get(getAsset);
 
-router.route("/getAllAssets").get(getAllAssets);
+router.route("/getAssets").get(getAllAssets);
 
 router.route("/getAsset/:id").get(getAssetById);
 
@@ -69,48 +51,23 @@ router
     upload.fields([
       { name: "initialAudioPrompt" },
       { name: "finalAudioPrompt" },
-      { name: "correctOption1Image" },
-      { name: "correctOption1Audio" },
-      { name: "correctOption2Image" },
-      { name: "correctOption2Audio" },
-      { name: "option1Image" },
-      { name: "option1Audio" },
-      { name: "option2Image" },
-      { name: "option2Audio" },
+      { name: "level1Image" },
+      { name: "level1CorrectOption1Audio"},
+      { name: "level1CorrectOption2Audio"},
+      { name: "level1Option1Audio" },
+      { name: "level1Option2Audio" },
+      { name: "level2Image" },
+      { name: "level2CorrectOption1Audio" },
+      { name: "level1CorrectOption2Audio"},
+      { name: "level2Option1Audio" },
+      { name: "level2Option2Audio" },
+      { name: "level3Image" },
+      { name: "level3CorrectOption1Audio" },
+      { name: "level1CorrectOption2Audio"},
+      { name: "level3Option1Audio" },
+      { name: "level3Option2Audio" },
     ]),
-    updateGame1
-  );
-
-router
-  .route("/updateGame2/:id")
-  .put(
-    upload.fields([
-      { name: "correctOption1Image" },
-      { name: "correctOption1Audio" },
-      { name: "correctOption2Image" },
-      { name: "correctOption2Audio" },
-      { name: "option1Image" },
-      { name: "option1Audio" },
-      { name: "option2Image" },
-      { name: "option2Audio" },
-    ]),
-    updateGame2
-  );
-
-router
-  .route("/updateGame3/:id")
-  .put(
-    upload.fields([
-      { name: "correctOption1Image" },
-      { name: "correctOption1Audio" },
-      { name: "correctOption2Image" },
-      { name: "correctOption2Audio" },
-      { name: "option1Image" },
-      { name: "option1Audio" },
-      { name: "option2Image" },
-      { name: "option2Audio" },
-    ]),
-    updateGame3
+    updateAsset
   );
 
 module.exports = router;

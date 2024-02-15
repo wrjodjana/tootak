@@ -178,7 +178,7 @@ const addAsset = async (req, res) => {
         if (asset) {
           return res.status(200).send("Asset already present in the database");
         } else {
-          const document = new game15Asset({
+          const document = new game15AssetAndAudio({
             name: req.body.name,
             module: req.body.module,
 
@@ -414,7 +414,7 @@ const getAsset = async (req, res) => {
 
           getObjectParams = {
             Bucket: bucketName,
-            Key: result.level3.leve32CorrectOption.audio,
+            Key: result.level3.level3CorrectOption.audio,
           };
           command = new GetObjectCommand(getObjectParams);
           var level3CorrectOptionAudioUrl = await getSignedUrl(s3, command, {
@@ -597,7 +597,7 @@ const getAssetById = async (req, res) => {
 
     getObjectParams = {
       Bucket: bucketName,
-      Key: result.level3.leve32CorrectOption.audio,
+      Key: result.level3.level3CorrectOption.audio,
     };
     command = new GetObjectCommand(getObjectParams);
     var level3CorrectOptionAudioUrl = await getSignedUrl(s3, command, {
