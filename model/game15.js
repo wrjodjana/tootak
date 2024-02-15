@@ -6,52 +6,52 @@ const game15Schema = mongoose.Schema({
   initialAudioPrompt: { type: String, required: true },
   finalAudioPrompt: { type: String, required: true},
 
-  game1: {
-    image: String,
-    correctOption: {
+  level1: {
+    level1Image: String,
+    level1CorrectOption: {
       text: String,
       audio: String,
     },
-    option1: {
+    level1Option1: {
       text: String,
       audio: String,
     },
-    option2: {
+    level1Option2: {
       text: String,
       audio: String,
-    },
+    }
   },
 
-  game2: {
-    image: String,
-    correctOption: {
+  level2: {
+    level2Image: String,
+    level2CorrectOption: {
       text: String,
       audio: String,
     },
-    option1: {
+    level2Option1: {
       text: String,
       audio: String,
     },
-    option2: {
+    level2Option2: {
       text: String,
       audio: String,
-    },
+    }
   },
 
-  game3: {
-    image: String,
-    correctOption: {
+  level3: {
+    level3Image: String,
+    level3CorrectOption: {
       text: String,
       audio: String,
     },
-    option1: {
+    level3Option1: {
       text: String,
       audio: String,
     },
-    option2: {
+    level3Option2: {
       text: String,
       audio: String,
-    },
+    }
   },
 
 });
