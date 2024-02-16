@@ -316,7 +316,7 @@ const addAsset = async (req, res) => {
             },
             level1Option2: {
               image: level1Option2Image.originalname,
-              audio: level1Option2.originalname,
+              audio: level1Option2Audio.originalname,
               text: req.body.level1Option2Text,
             },
           },
@@ -340,7 +340,7 @@ const addAsset = async (req, res) => {
             },
             level2Option2: {
               image: level2Option2Image.originalname,
-              audio: level2Option2.originalname,
+              audio: level2Option2Audio.originalname,
               text: req.body.level2Option2Text,
             },
           },
@@ -364,7 +364,7 @@ const addAsset = async (req, res) => {
             },
             level3Option2: {
               image: level3Option2Image.originalname,
-              audio: level3Option2.originalname,
+              audio: level3Option2Audio.originalname,
               text: req.body.level3Option2Text,
             },
           },
@@ -1285,7 +1285,7 @@ const updateAsset = async (req, res) => {
         },
         level1Option2: {
           image: level1Option2Image.originalname,
-          audio: level1Option2.originalname,
+          audio: level1Option2Audio.originalname,
           text: req.body.level1Option2Text,
         },
       },
@@ -1309,7 +1309,7 @@ const updateAsset = async (req, res) => {
         },
         level2Option2: {
           image: level2Option2Image.originalname,
-          audio: level2Option2.originalname,
+          audio: level2Option2Audio.originalname,
           text: req.body.level2Option2Text,
         },
       },
@@ -1333,7 +1333,7 @@ const updateAsset = async (req, res) => {
         },
         level3Option2: {
           image: level3Option2Image.originalname,
-          audio: level3Option2.originalname,
+          audio: level3Option2Audio.originalname,
           text: req.body.level3Option2Text,
         },
       },
@@ -1349,7 +1349,7 @@ const updateAsset = async (req, res) => {
       message: "done",
     });
   } catch (error) {
-    return res.status(400).send({ error: message });
+    return res.status(400).send({ error: error.message });
   }
 };
 
