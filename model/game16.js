@@ -22,7 +22,7 @@ const game16Schema = mongoose.Schema({
       audio: String,
       text: String,
     },
-    level1option2: {
+    level1Option2: {
       image: String,
       audio: String,
       text: String,

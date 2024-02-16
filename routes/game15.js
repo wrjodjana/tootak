@@ -1,13 +1,6 @@
 const express = require("express");
 const multer = require("multer");
-const {
-  addAsset,
-  getAsset,
-  getAllAssets,
-  getAssetById,
-  deleteById,
-  updateAsset,
-} = require("../controllers/game15");
+const { addAsset, getAsset, getAllAssets, getAssetById, deleteById, updateAsset } = require("../controllers/game15");
 const router = express.Router();
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
@@ -43,7 +36,7 @@ router.route("/getAsset/:id").get(getAssetById);
 router.route("/delete/:id").delete(deleteById);
 
 router
-  .route("/updateGame1/:id")
+  .route("/updateAsset/:id")
   .put(
     upload.fields([
       { name: "initialAudioPrompt" },

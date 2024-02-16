@@ -19,7 +19,7 @@ const game15Schema = mongoose.Schema({
     level1Option2: {
       text: String,
       audio: String,
-    }
+    },
   },
 
   level2: {
@@ -35,7 +35,7 @@ const game15Schema = mongoose.Schema({
     level2Option2: {
       text: String,
       audio: String,
-    }
+    },
   },
 
   level3: {
@@ -51,9 +51,8 @@ const game15Schema = mongoose.Schema({
     level3Option2: {
       text: String,
       audio: String,
-    }
+    },
   },
-
 });
 
 module.exports = mongoose.model("game15", game15Schema);
