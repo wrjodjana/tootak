@@ -39,6 +39,16 @@ const addAsset = async (req, res) => {
     command = new PutObjectCommand(params);
     await s3.send(command);
 
+    var transitionAudioPrompt = req.files["transitionAudioPrompt"][0];
+    params = {
+      Bucket: bucketName,
+      Key: transitionAudioPrompt.originalname,
+      Body: transitionAudioPrompt.buffer,
+      ContentType: transitionAudioPrompt.mimetype,
+    };
+    command = new PutObjectCommand(params);
+    await s3.send(command);
+
     // level 1
 
     var level1CorrectOption1Image = req.files["level1CorrectOption1Image"][0];
@@ -296,6 +306,7 @@ const addAsset = async (req, res) => {
           // audio
           initialAudioPrompt: initialAudioPrompt.originalname,
           finalAudioPrompt: finalAudioPrompt.originalname,
+          transitionAudioPrompt: transitionAudioPrompt.originalname,
 
           // level1
           level1: {
@@ -409,9 +420,16 @@ const getAsset = async (req, res) => {
           expiresIn: 3600,
         });
 
-        // fetching urls for level 1
+        getObjectParams = {
+          Bucket: bucketName,
+          Key: result.transitionAudioPrompt,
+        };
+        command = new GetObjectCommand(getObjectParams);
+        var transitionAudioPromptUrl = await getSignedUrl(s3, command, {
+          expiresIn: 3600,
+        });
 
-        var level1Audios = [];
+        // fetching urls for level 1
 
         getObjectParams = {
           Bucket: bucketName,
@@ -430,7 +448,6 @@ const getAsset = async (req, res) => {
         var level1CorrectOption1AudioUrl = await getSignedUrl(s3, command, {
           expiresIn: 3600,
         });
-        level1Audios.push(await getSignedUrl(s3, command, { expiresIn: 3600 }));
 
         getObjectParams = {
           Bucket: bucketName,
@@ -449,7 +466,6 @@ const getAsset = async (req, res) => {
         var level1CorrectOption2AudioUrl = await getSignedUrl(s3, command, {
           expiresIn: 3600,
         });
-        level1Audios.push(await getSignedUrl(s3, command, { expiresIn: 3600 }));
 
         getObjectParams = {
           Bucket: bucketName,
@@ -468,7 +484,6 @@ const getAsset = async (req, res) => {
         var level1Option1AudioUrl = await getSignedUrl(s3, command, {
           expiresIn: 3600,
         });
-        level1Audios.push(await getSignedUrl(s3, command, { expiresIn: 3600 }));
 
         getObjectParams = {
           Bucket: bucketName,
@@ -487,7 +502,6 @@ const getAsset = async (req, res) => {
         var level1Option2AudioUrl = await getSignedUrl(s3, command, {
           expiresIn: 3600,
         });
-        level1Audios.push(await getSignedUrl(s3, command, { expiresIn: 3600 }));
 
         var level1Array = [
           [level1CorrectOption1ImageUrl, level1CorrectOption1AudioUrl, result.level1.level1CorrectOption1.text, true],
@@ -498,8 +512,6 @@ const getAsset = async (req, res) => {
         var shuffled1 = fisherYatesShuffle(level1Array);
 
         // fetching urls for level 2
-
-        var level2Audios = [];
 
         getObjectParams = {
           Bucket: bucketName,
@@ -518,7 +530,6 @@ const getAsset = async (req, res) => {
         var level2CorrectOption1AudioUrl = await getSignedUrl(s3, command, {
           expiresIn: 3600,
         });
-        level2Audios.push(await getSignedUrl(s3, command, { expiresIn: 3600 }));
 
         getObjectParams = {
           Bucket: bucketName,
@@ -537,7 +548,6 @@ const getAsset = async (req, res) => {
         var level2CorrectOption2AudioUrl = await getSignedUrl(s3, command, {
           expiresIn: 3600,
         });
-        level2Audios.push(await getSignedUrl(s3, command, { expiresIn: 3600 }));
 
         getObjectParams = {
           Bucket: bucketName,
@@ -556,7 +566,6 @@ const getAsset = async (req, res) => {
         var level2Option1AudioUrl = await getSignedUrl(s3, command, {
           expiresIn: 3600,
         });
-        level2Audios.push(await getSignedUrl(s3, command, { expiresIn: 3600 }));
 
         getObjectParams = {
           Bucket: bucketName,
@@ -575,7 +584,6 @@ const getAsset = async (req, res) => {
         var level2Option2AudioUrl = await getSignedUrl(s3, command, {
           expiresIn: 3600,
         });
-        level2Audios.push(await getSignedUrl(s3, command, { expiresIn: 3600 }));
 
         var level2Array = [
           [level2CorrectOption1ImageUrl, level2CorrectOption1AudioUrl, result.level2.level2CorrectOption1.text, true],
@@ -586,8 +594,6 @@ const getAsset = async (req, res) => {
         var shuffled2 = fisherYatesShuffle(level2Array);
 
         // fetching urls for level 3
-
-        var level3Audios = [];
 
         getObjectParams = {
           Bucket: bucketName,
@@ -606,7 +612,6 @@ const getAsset = async (req, res) => {
         var level3CorrectOption1AudioUrl = await getSignedUrl(s3, command, {
           expiresIn: 3600,
         });
-        level3Audios.push(await getSignedUrl(s3, command, { expiresIn: 3600 }));
 
         getObjectParams = {
           Bucket: bucketName,
@@ -625,7 +630,6 @@ const getAsset = async (req, res) => {
         var level3CorrectOption2AudioUrl = await getSignedUrl(s3, command, {
           expiresIn: 3600,
         });
-        level3Audios.push(await getSignedUrl(s3, command, { expiresIn: 3600 }));
 
         getObjectParams = {
           Bucket: bucketName,
@@ -644,7 +648,6 @@ const getAsset = async (req, res) => {
         var level3Option1AudioUrl = await getSignedUrl(s3, command, {
           expiresIn: 3600,
         });
-        level3Audios.push(await getSignedUrl(s3, command, { expiresIn: 3600 }));
 
         getObjectParams = {
           Bucket: bucketName,
@@ -663,7 +666,6 @@ const getAsset = async (req, res) => {
         var level3Option2AudioUrl = await getSignedUrl(s3, command, {
           expiresIn: 3600,
         });
-        level3Audios.push(await getSignedUrl(s3, command, { expiresIn: 3600 }));
 
         var level3Array = [
           [level3CorrectOption1ImageUrl, level3CorrectOption1AudioUrl, result.level3.level3CorrectOption1.text, true],
@@ -674,8 +676,9 @@ const getAsset = async (req, res) => {
         var shuffled3 = fisherYatesShuffle(level3Array);
 
         return res.status(200).send({
-          initialAudioPromptUrl,
-          finalAudioPromptUrl,
+          initialAudioPrompt: initialAudioPromptUrl,
+          finalAudioPrompt: finalAudioPromptUrl,
+          transitionAudioPrompt: transitionAudioPromptUrl,
           level1: shuffled1,
           level2: shuffled2,
           level3: shuffled3,
@@ -716,6 +719,15 @@ const getAssetById = async (req, res) => {
     };
     command = new GetObjectCommand(getObjectParams);
     var finalAudioPromptUrl = await getSignedUrl(s3, command, {
+      expiresIn: 3600,
+    });
+
+    getObjectParams = {
+      Bucket: bucketName,
+      Key: result.transitionAudioPrompt,
+    };
+    command = new GetObjectCommand(getObjectParams);
+    var transitionAudioPromptUrl = await getSignedUrl(s3, command, {
       expiresIn: 3600,
     });
 
@@ -939,6 +951,7 @@ const getAssetById = async (req, res) => {
       result,
       initialAudioPromptUrl,
       finalAudioPromptUrl,
+      transitionAudioPromptUrl,
       level1CorrectOption1ImageUrl,
       level1CorrectOption1AudioUrl,
       level1CorrectOption2ImageUrl,
@@ -1008,6 +1021,16 @@ const updateAsset = async (req, res) => {
       Key: finalAudioPrompt.originalname,
       Body: finalAudioPrompt.buffer,
       ContentType: finalAudioPrompt.mimetype,
+    };
+    command = new PutObjectCommand(params);
+    await s3.send(command);
+
+    var transitionAudioPrompt = req.files["transitionAudioPrompt"][0];
+    params = {
+      Bucket: bucketName,
+      Key: transitionAudioPrompt.originalname,
+      Body: transitionAudioPrompt.buffer,
+      ContentType: transitionAudioPrompt.mimetype,
     };
     command = new PutObjectCommand(params);
     await s3.send(command);
@@ -1265,6 +1288,7 @@ const updateAsset = async (req, res) => {
       // audio
       initialAudioPrompt: initialAudioPrompt.originalname,
       finalAudioPrompt: finalAudioPrompt.originalname,
+      transitionAudioPrompt: transitionAudioPrompt.originalname,
 
       // level1
       level1: {

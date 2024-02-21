@@ -5,6 +5,7 @@ const game16Schema = mongoose.Schema({
 
   initialAudioPrompt: String,
   finalAudioPrompt: String,
+  transitionAudioPrompt: String,
 
   level1: {
     level1CorrectOption1: {

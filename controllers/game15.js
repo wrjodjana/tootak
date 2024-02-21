@@ -564,7 +564,6 @@ const getAssetById = async (req, res) => {
     var level3CorrectOptionAudioUrl = await getSignedUrl(s3, command, {
       expiresIn: 3600,
     });
-    level3Audios.push(await getSignedUrl(s3, command, { expiresIn: 3600 }));
 
     getObjectParams = {
       Bucket: bucketName,
@@ -574,7 +573,6 @@ const getAssetById = async (req, res) => {
     var level3Option1AudioUrl = await getSignedUrl(s3, command, {
       expiresIn: 3600,
     });
-    level3Audios.push(await getSignedUrl(s3, command, { expiresIn: 3600 }));
 
     getObjectParams = {
       Bucket: bucketName,
@@ -584,7 +582,6 @@ const getAssetById = async (req, res) => {
     var level3Option2AudioUrl = await getSignedUrl(s3, command, {
       expiresIn: 3600,
     });
-    level3Audios.push(await getSignedUrl(s3, command, { expiresIn: 3600 }));
 
     return res.status(200).send({
       result,
