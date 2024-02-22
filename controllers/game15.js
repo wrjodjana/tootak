@@ -41,6 +41,16 @@ const addAsset = async (req, res) => {
     command = new PutObjectCommand(params);
     await s3.send(command);
 
+    var transitionAudioPrompt = req.files["transitionAudioPrompt"][0];
+    params = {
+      Bucket: bucketName,
+      Key: transitionAudioPrompt.originalname,
+      Body: transitionAudioPrompt.buffer,
+      ContentType: transitionAudioPrompt.mimetype,
+    };
+    command = new PutObjectCommand(params);
+    await s3.send(command);
+
     // level 1
 
     var level1Image = req.files["level1Image"][0];
@@ -176,6 +186,7 @@ const addAsset = async (req, res) => {
           module: req.body.module,
 
           // audio
+          transitionAudioPrompt: transitionAudioPrompt.originalname,
           initialAudioPrompt: initialAudioPrompt.originalname,
           finalAudioPrompt: finalAudioPrompt.originalname,
 
@@ -267,6 +278,15 @@ const getAsset = async (req, res) => {
         };
         command = new GetObjectCommand(getObjectParams);
         var finalAudioPromptUrl = await getSignedUrl(s3, command, {
+          expiresIn: 3600,
+        });
+
+        getObjectParams = {
+          Bucket: bucketName,
+          Key: result.transitionAudioPrompt,
+        };
+        command = new GetObjectCommand(getObjectParams);
+        var transitionAudioPromptUrl = await getSignedUrl(s3, command, {
           expiresIn: 3600,
         });
 
@@ -423,6 +443,7 @@ const getAsset = async (req, res) => {
         return res.status(200).send({
           initialAudioPromptUrl,
           finalAudioPromptUrl,
+          transitionAudioPromptUrl,
           level1ImageUrl,
           level2ImageUrl,
           level3ImageUrl,
@@ -466,6 +487,15 @@ const getAssetById = async (req, res) => {
     };
     command = new GetObjectCommand(getObjectParams);
     var finalAudioPromptUrl = await getSignedUrl(s3, command, {
+      expiresIn: 3600,
+    });
+
+    getObjectParams = {
+      Bucket: bucketName,
+      Key: result.transitionAudioPrompt,
+    };
+    command = new GetObjectCommand(getObjectParams);
+    var transitionAudioPromptUrl = await getSignedUrl(s3, command, {
       expiresIn: 3600,
     });
 
@@ -587,6 +617,7 @@ const getAssetById = async (req, res) => {
       result,
       initialAudioPromptUrl,
       finalAudioPromptUrl,
+      transitionAudioPromptUrl,
       level1ImageUrl,
       level1CorrectOptionAudioUrl,
       level1Option1AudioUrl,
@@ -644,6 +675,16 @@ const updateAsset = async (req, res) => {
       Key: finalAudioPrompt.originalname,
       Body: finalAudioPrompt.buffer,
       ContentType: finalAudioPrompt.mimetype,
+    };
+    command = new PutObjectCommand(params);
+    await s3.send(command);
+
+    var transitionAudioPrompt = req.files["transitionAudioPrompt"][0];
+    params = {
+      Bucket: bucketName,
+      Key: transitionAudioPrompt.originalname,
+      Body: transitionAudioPrompt.buffer,
+      ContentType: transitionAudioPrompt.mimetype,
     };
     command = new PutObjectCommand(params);
     await s3.send(command);
@@ -781,6 +822,7 @@ const updateAsset = async (req, res) => {
       // audio
       initialAudioPrompt: initialAudioPrompt.originalname,
       finalAudioPrompt: finalAudioPrompt.originalname,
+      transitionAudioPrompt: transitionAudioPrompt.originalname,
 
       // level1
       level1: {

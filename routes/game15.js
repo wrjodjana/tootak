@@ -11,6 +11,7 @@ router
     upload.fields([
       { name: "initialAudioPrompt" },
       { name: "finalAudioPrompt" },
+      { name: "transitionAudioPrompt" },
       { name: "level1Image" },
       { name: "level1CorrectOptionAudio" },
       { name: "level1Option1Audio" },
@@ -41,6 +42,7 @@ router
     upload.fields([
       { name: "initialAudioPrompt" },
       { name: "finalAudioPrompt" },
+      { name: "transitionAudioPrompt" },
       { name: "level1Image" },
       { name: "level1CorrectOptionAudio" },
       { name: "level1Option1Audio" },
