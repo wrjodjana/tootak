@@ -4,6 +4,7 @@ const game13Schema = mongoose.Schema({
   module: { type: Number, required: true },
   intiialAudioPrompt: { type: String, required: true },
   finalAudioPrompt: { type: String, required: true },
+  finalSentence: { type: String, required: true },
   audios: { type: Array, default: [] },
   texts: { type: Array, default: [] },
 });

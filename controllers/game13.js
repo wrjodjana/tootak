@@ -39,6 +39,16 @@ const addAsset = async (req, res) => {
     command = new PutObjectCommand(params);
     await s3.send(command);
 
+    var finalSentence = req.files["finalSentence"][0];
+    params = {
+      Bucket: bucketName,
+      Key: finalSentence.originalname,
+      Body: finalSentence.buffer,
+      ContentType: finalSentence.mimetype,
+    };
+    command = new PutObjectCommand(params);
+    await s3.send(command);
+
     var audios = [],
       texts = [];
 
@@ -72,6 +82,7 @@ const addAsset = async (req, res) => {
 
           initialAudioPrompt: initialAudioPrompt.originalname,
           finalAudioPrompt: finalAudioPrompt.originalname,
+          finalSentence: finalSentence.originalname,
 
           audios: audios,
           texts: texts,
@@ -117,6 +128,15 @@ const getAsset = async (req, res) => {
           expiresIn: 3600,
         });
 
+        getObjectParams = {
+          Bucket: bucketName,
+          Key: result.finalSentence,
+        };
+        command = new GetObjectCommand(getObjectParams);
+        var finalSentenceUrl = await getSignedUrl(s3, command, {
+          expiresIn: 3600,
+        });
+
         for (let i = 0; i < result.audios.length; i++) {
           var currentAudio = String(result.audios[i]);
 
@@ -132,6 +152,7 @@ const getAsset = async (req, res) => {
         return res.status(200).send({
           initialAudioPromptUrl,
           finalAudioPromptUrl,
+          finalSentenceUrl,
           audios,
           texts: result.texts,
         });
@@ -176,6 +197,15 @@ const getAssetById = async (req, res) => {
       expiresIn: 3600,
     });
 
+    getObjectParams = {
+      Bucket: bucketName,
+      Key: result.finalSentence,
+    };
+    command = new GetObjectCommand(getObjectParams);
+    var finalSentenceUrl = await getSignedUrl(s3, command, {
+      expiresIn: 3600,
+    });
+
     for (let i = 0; i < result.audios.length; i++) {
       var currentAudio = String(result.audios[i]);
 
@@ -191,6 +221,7 @@ const getAssetById = async (req, res) => {
       result,
       initialAudioPromptUrl,
       finalAudioPromptUrl,
+      finalSentenceUrl,
       audios,
     });
   } catch (error) {
@@ -244,6 +275,16 @@ const updateAsset = async (req, res) => {
     command = new PutObjectCommand(params);
     await s3.send(command);
 
+    var finalSentence = req.files["finalSentence"][0];
+    params = {
+      Bucket: bucketName,
+      Key: finalSentence.originalname,
+      Body: finalSentence.buffer,
+      ContentType: finalSentence.mimetype,
+    };
+    command = new PutObjectCommand(params);
+    await s3.send(command);
+
     for (let i = 0; i < 6; i++) {
       var string1 = "audio".concat(i + 1);
       var string2 = "text".concat(i + 1);
@@ -269,6 +310,7 @@ const updateAsset = async (req, res) => {
       module: req.body.module,
       initialAudioPrompt: initialAudioPrompt.originalname,
       finalAudioPrompt: finalAudioPrompt.originalname,
+      finalSentence: finalSentence.originalname,
       audios: audios,
       texts: texts,
     };
